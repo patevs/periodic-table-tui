@@ -2,7 +2,7 @@
 import time
 import curses
 
-class periodicTable(object):
+class PeriodicTable(object):
 
     box = [
     "---------------",
@@ -235,7 +235,7 @@ class periodicTable(object):
                     if element is not None:
                         self.position[0], self.position[1] = element['coordinates'][0], element['coordinates'][1]
                     text = ''
-                if key == curses.KEY_BACKSPACE:
+                if key == curses.KEY_BACKSPACE or key == 127:
                     text = text[:-1]
 
 
@@ -300,7 +300,7 @@ class periodicTable(object):
             stdscr.addstr(line, 74, self.box[line], curses.color_pair(5))
 
 
-    def curses_init(eslf, stdscr):
+    def curses_init(self, stdscr):
         curses.curs_set(0)
         curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -337,3 +337,16 @@ class periodicTable(object):
         self.check_term_minsize(stdscr, min_h, min_w)
 
         self.navigate(stdscr, min_h, min_w)
+
+if __name__ == "__main__":
+    import json
+    import os
+    try:
+        with open(os.path.join(os.path.dirname(__file__), 'elements.json'), 'r') as f:
+            elements = json.load(f)
+        ptable = PeriodicTable(elements)
+        curses.wrapper(ptable.main)
+    except FileNotFoundError as e:
+        print(f"Could not open elements file: {e}")
+
+
